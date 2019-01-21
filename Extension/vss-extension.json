@@ -6,7 +6,7 @@
   "publisher": "chrisgardner",
   "description": "Tasks for interacting with Deployment Groups",
   "categories": [
-    "Build and release"
+    "Azure Pipelines"
   ],
   "targets": [
     {
