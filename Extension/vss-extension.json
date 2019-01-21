@@ -1,0 +1,65 @@
+{
+  "manifestVersion": 1,
+  "id": "CLG-DeploymentGroups",
+  "version": "1.0.0",
+  "name": "Deployment Groups Tasks",
+  "publisher": "chrisgardner",
+  "description": "Tasks for interacting with Deployment Groups",
+  "categories": [
+    "Build and release"
+  ],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "tags": [
+    "Release",
+    "Package",
+    "Deployment"
+  ],
+  "galleryFlags": [
+    "Public"
+  ],
+  "branding": {
+    "color": "#3116cc",
+    "theme": "dark"
+  },
+  "icons": {
+    "default": "images/logo.png"
+  },
+  "links": {
+    "getstarted": {
+      "uri": "https://github.com/ChrisLGardner/AzurePipelinesDeploymentGroups/wiki"
+    },
+    "support": {
+      "uri": "https://github.com/ChrisLGardner/AzurePipelinesDeploymentGroups/issues"
+    }
+  },
+  "screenshots": [],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    },
+    "license": {
+      "path": "license.md"
+    }
+  },
+  "files": [
+    {
+      "path": "AddMachine"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "AddDeploymentGroupMachine-Task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "task"
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "powershell.codeFormatting.preset": "Stroustrup",
+    "editor.formatOnSave": true,
+    "powershell.codeFormatting.alignPropertyValuePairs": false
+}
