@@ -58,7 +58,7 @@
         "ms.vss-distributed-task.tasks"
       ],
       "properties": {
-        "name": "task"
+        "name": "AddMachine"
       }
     }
   ]
