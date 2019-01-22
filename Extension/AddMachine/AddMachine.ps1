@@ -14,6 +14,7 @@ $Credential = New-Object System.Management.Automation.PSCredential ($AdminUserNa
 
 $InvokeCommandSplat = @{
     ComputerName = $ComputerName
+    Credential = $Credential
     ArgumentList = @(
         $AgentPath
         $DeploymentGroupName
