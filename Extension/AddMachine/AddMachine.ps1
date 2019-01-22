@@ -22,6 +22,7 @@ $InvokeCommandSplat = @{
         $AccessToken
         $Project
         $ENV:System_TeamFoundationCollectionUri
+        $Replace
     )
 }
 
@@ -40,7 +41,8 @@ $InvokeCommandScript = {
         $DeploymentGroupName,
         $AccessToken,
         $Project,
-        $Url
+        $Url,
+        $Replace
     )
     $ErrorActionPreference = "Stop"
 
