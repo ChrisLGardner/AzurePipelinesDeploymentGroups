@@ -8,6 +8,7 @@ $TestCertificate = Get-VstsInput -Name testCertificate
 $DeploymentGroupName = Get-VstsInput -Name DeploymentGroupName
 $AccessToken = Get-VstsInput -Name AccessToken
 $Project = Get-VstsInput -Name Project -Default $Env:System_TeamProject
+$Replace = Get-VstsInput -Name Replace
 
 
 $Credential = New-Object System.Management.Automation.PSCredential ($AdminUserName, (ConvertTo-SecureString $AdminPassword -AsPlainText -Force))
@@ -80,19 +81,13 @@ $InvokeCommandScript = {
     [System.IO.Compression.ZipFile]::ExtractToDirectory( $agentZip, "$PWD")
 
     Write-Verbose -Message "Configuring agent with specified settings"
-    $ConfigSettings = @(
-        "--deploymentgroup"
-        "--deploymentgroupname $DeploymentGroupName"
-        "--agent $env:COMPUTERNAME"
-        "--runasservice"
-        "--work '_work'"
-        "--url $Url"
-        "--projectname $Project"
-        "--auth PAT"
-        "--token $AccessToken"
-    )
-    Start-Process -FilePath $Pwd\config.cmd -ArgumentList $ConfigSettings -Verb RunAs -WorkingDirectory $Pwd -Wait
 
+    if ([bool]::Parse($Replace)) {
+        .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken" --replace
+    }
+    else {
+        .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken"
+    }
     Remove-Item $agentZip
 }
 

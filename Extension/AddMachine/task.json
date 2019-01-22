@@ -74,6 +74,14 @@
       "helpMarkDown": "Administrator password for the target machines. <br>It can accept variable defined in build or release pipelines as '$(passwordVariable)'. <br>You may mark variable type as 'secret' to secure it."
     },
     {
+      "name": "Replace",
+      "type": "boolean",
+      "label": "Replace Existing",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Replaces existing machines if they are registered already. Good for short lived environments that are recreated with the same names."
+    },
+    {
       "name": "Protocol",
       "type": "radio",
       "label": "Protocol",
