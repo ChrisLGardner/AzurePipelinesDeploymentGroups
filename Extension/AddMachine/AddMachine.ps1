@@ -91,7 +91,7 @@ $InvokeCommandScript = {
     else {
         $null = .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken"
     }
-    Remove-Item $agentZip
+    $null = Remove-Item $agentZip
 
     $env:COMPUTERNAME
 }
