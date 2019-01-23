@@ -106,7 +106,7 @@ $Headers = @{
     Authorization = "Bearer $Env:System_AccessToken"
 }
 
-$DeploymentGroups = Invoke-RestMethod -Url $DeploymentGroupListUrl -Headers $Headers | Select-Object -Expand Value
+$DeploymentGroups = Invoke-RestMethod -Uri $DeploymentGroupListUrl -Headers $Headers | Select-Object -Expand Value
 
 $DeploymentGroupId = $DeploymentGroups | Where-Object {$_.Name -eq $DeploymentGroupName}
 
