@@ -14,3 +14,5 @@ A task to add one or more machines to a Deployment Group. It accepts the followi
 * Password: Password of the local admin account.
 * Protocol: Protocol to use for connecting with the machines. Defaults to HTTP.
 * Test Certificate: Indicates whether the certificate on the HTTPS endpoint is a test certificate, such as self signed.
+
+*Note*: The task requires access to the build/release agent's OAuth token to ensure that the newly deployed Deployment Group agent has successfully joined the target group and is showing as online.

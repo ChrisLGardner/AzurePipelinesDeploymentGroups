@@ -48,7 +48,7 @@ $InvokeCommandScript = {
 
     Write-Verbose -Message "Creating agent folder in $AgentPath"
     If (-not (Test-Path $AgentPath)) {
-        New-Item -Path $AgentPath -ItemType Directory
+        $null = New-Item -Path $AgentPath -ItemType Directory
     }
     Set-Location $AgentPath
 
@@ -56,7 +56,7 @@ $InvokeCommandScript = {
         $destFolder = "A" + $i.ToString()
 
         if (-not (Test-Path ($destFolder))) {
-            New-Item -Path $destFolder -ItemType Directory
+            $null = New-Item -Path $destFolder -ItemType Directory
             Set-Location $destFolder
             break
         }
@@ -86,12 +86,36 @@ $InvokeCommandScript = {
     Write-Verbose -Message "Configuring agent with specified settings"
 
     if ([bool]::Parse($Replace)) {
-        .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken" --replace
+        $null = .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken" --replace
     }
     else {
-        .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken"
+        $null = .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken"
     }
     Remove-Item $agentZip
+
+    $env:COMPUTERNAME
 }
 
-Invoke-Command -ScriptBlock $InvokeCommandScript @InvokeCommandSplat
+Write-Host "Connecting to target computer(s) and configuring agent"
+$AgentName = Invoke-Command -ScriptBlock $InvokeCommandScript @InvokeCommandSplat
+
+Write-Host "Ensuring agent has been configured and appears online"
+$DeploymentGroupListUrl = "$ENV:System_TeamFoundationCollectionUri/$Project/_apis/distributedtask/deploymentgroups?api-version=5.0-preview.1"
+
+$Headers = @{
+    Authorization = "Bearer $Env:System_AccessToken"
+}
+
+$DeploymentGroups = Invoke-RestMethod -Url $DeploymentGroupListUrl -Headers $Headers | Select-Object -Expand Value
+
+$DeploymentGroupId = $DeploymentGroups | Where-Object {$_.Name -eq $DeploymentGroupName}
+
+$DeploymentGroupDetailsUrl = "$ENV:System_TeamFoundationCollectionUri/$Project/_apis/distributedtask/deploymentgroups/$($DeploymentGroupId.Id)?api-version=5.0-preview.1"
+
+$DeploymentGroupDetails = Invoke-RestMethod -Uri $DeploymentGroupDetailsUrl -Headers $Headers
+
+while (-not($DeploymentGroupDetails.machines.agent | Where-Object { $_.name -eq $AgentName -and $_.Status -eq 'Online'}) ) {
+    Write-Host "Waiting to allow agent to connect and rechecking."
+    Start-Sleep -Seconds 20
+    $DeploymentGroupDetails = Invoke-RestMethod -Uri $DeploymentGroupDetailsUrl -Headers $Headers
+}
