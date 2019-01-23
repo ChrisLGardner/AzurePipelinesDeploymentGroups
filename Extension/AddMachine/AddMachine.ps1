@@ -9,6 +9,8 @@ $DeploymentGroupName = Get-VstsInput -Name DeploymentGroupName
 $AccessToken = Get-VstsInput -Name AccessToken
 $Project = Get-VstsInput -Name Project -Default $Env:System_TeamProject
 $Replace = Get-VstsInput -Name Replace
+$RunAsUserName = Get-VstsInput -Name RunAsUserName
+$RunAsPassword = Get-VstsInput -Name RunAsPassword
 
 
 $Credential = New-Object System.Management.Automation.PSCredential ($AdminUserName, (ConvertTo-SecureString $AdminPassword -AsPlainText -Force))
@@ -23,6 +25,8 @@ $InvokeCommandSplat = @{
         $Project
         $ENV:System_TeamFoundationCollectionUri
         $Replace
+        $RunAsUserName
+        $RunAsPassword
     )
 }
 
@@ -42,7 +46,9 @@ $InvokeCommandScript = {
         $AccessToken,
         $Project,
         $Url,
-        $Replace
+        $Replace,
+        $RunAsUserName,
+        $RunAsPassword
     )
     $ErrorActionPreference = "Stop"
 
@@ -85,12 +91,28 @@ $InvokeCommandScript = {
 
     Write-Verbose -Message "Configuring agent with specified settings"
 
+    $ConfigSettings = @(
+        '--deploymentgroup'
+        "--deploymentgroupname '$DeploymentGroupName'"
+        "--agent '$env:COMPUTERNAME'"
+        "--runasservice"
+        "--work '_work'"
+        "--url '$Url'"
+        "--projectname '$Project'"
+        "--auth PAT"
+        "--token '$AccessToken'"
+    )
+
     if ([bool]::Parse($Replace)) {
-        $null = .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken" --replace
+        $ConfigSettings += "--replace"
     }
-    else {
-        $null = .\config.cmd --deploymentgroup --deploymentgroupname "$DeploymentGroupName" --agent "$env:COMPUTERNAME" --runasservice --work "_work" --url "$Url" --projectname "$Project" --auth PAT --token "$AccessToken"
+
+    if (-not([String]::IsNullOrWhiteSpace($RunAsUserName)) -and -not([String]::IsNullOrWhiteSpace($RunAsPassword))) {
+        $ConfigSettings += "--WindowsLogonAccount $RunAsUserName"
+        $ConfigSettings += "--WindowsLogonPassword $RunAsPassword"
     }
+
+    $null = cmd.exe /c "$pwd\config.cmd $($ConfigSettings -join ' ')"
     $null = Remove-Item $agentZip
 
     $env:COMPUTERNAME
@@ -102,6 +124,7 @@ $AgentName = Invoke-Command -ScriptBlock $InvokeCommandScript @InvokeCommandSpla
 Write-Host "Ensuring agent has been configured and appears online"
 $DeploymentGroupListUrl = "$ENV:System_TeamFoundationCollectionUri$Project/_apis/distributedtask/deploymentgroups?api-version=5.0-preview.1"
 
+Write-Host "Trying url: $DeploymentGroupListUrl"
 $AuthToken = [Text.Encoding]::ASCII.GetBytes(('{0}:{1}' -f 'Anything', $AccessToken))
 $AuthToken = [Convert]::ToBase64String($AuthToken)
 $headers = @{Authorization = ("Basic $AuthToken")}
