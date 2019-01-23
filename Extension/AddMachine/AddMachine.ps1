@@ -100,13 +100,13 @@ Write-Host "Connecting to target computer(s) and configuring agent"
 $AgentName = Invoke-Command -ScriptBlock $InvokeCommandScript @InvokeCommandSplat
 
 Write-Host "Ensuring agent has been configured and appears online"
-$DeploymentGroupListUrl = "$ENV:System_TeamFoundationCollectionUri/$Project/_apis/distributedtask/deploymentgroups?api-version=5.0-preview.1"
+$DeploymentGroupListUrl = "$ENV:System_TeamFoundationCollectionUri$Project/_apis/distributedtask/deploymentgroups?api-version=5.0-preview.1"
 
-$Headers = @{
-    Authorization = "Bearer $Env:System_AccessToken"
-}
+$AuthToken = [Text.Encoding]::ASCII.GetBytes(('{0}:{1}' -f 'Anything', $AccessToken))
+$AuthToken = [Convert]::ToBase64String($AuthToken)
+$headers = @{Authorization = ("Basic $AuthToken")}
 
-$DeploymentGroups = Invoke-RestMethod -Uri $DeploymentGroupListUrl -Headers $Headers | Select-Object -Expand Value
+$DeploymentGroups = Invoke-RestMethod -Uri $DeploymentGroupListUrl -Headers $Headers | Select-Object -ExpandProperty Value
 
 $DeploymentGroupId = $DeploymentGroups | Where-Object {$_.Name -eq $DeploymentGroupName}
 
