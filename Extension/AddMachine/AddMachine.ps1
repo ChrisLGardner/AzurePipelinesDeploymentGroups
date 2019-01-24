@@ -52,6 +52,10 @@ $InvokeCommandScript = {
     )
     $ErrorActionPreference = "Stop"
 
+    if (Get-Service -Name VSTS*$Env:ComputerName) {
+        return $Env:ComputerName
+    }
+
     Write-Verbose -Message "Creating agent folder in $AgentPath"
     If (-not (Test-Path $AgentPath)) {
         $null = New-Item -Path $AgentPath -ItemType Directory
@@ -96,7 +100,7 @@ $InvokeCommandScript = {
         "--deploymentgroupname $DeploymentGroupName"
         "--agent $env:COMPUTERNAME"
         "--runasservice"
-        "--work '_work'"
+        "--work _work"
         "--url $Url"
         "--projectname $Project"
         "--auth PAT"
