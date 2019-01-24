@@ -14,3 +14,5 @@ A task to add one or more machines to a Deployment Group. It accepts the followi
 * Password: Password of the local admin account.
 * Protocol: Protocol to use for connecting with the machines. Defaults to HTTP.
 * Test Certificate: Indicates whether the certificate on the HTTPS endpoint is a test certificate, such as self signed.
+* Run As Username: Specify a user to run the deployment agent as on the remote machine, if required
+* Run As Password: Specify password for the user account running the agent.
