@@ -93,14 +93,14 @@ $InvokeCommandScript = {
 
     $ConfigSettings = @(
         '--deploymentgroup'
-        "--deploymentgroupname '$DeploymentGroupName'"
-        "--agent '$env:COMPUTERNAME'"
+        "--deploymentgroupname $DeploymentGroupName"
+        "--agent $env:COMPUTERNAME"
         "--runasservice"
         "--work '_work'"
-        "--url '$Url'"
-        "--projectname '$Project'"
+        "--url $Url"
+        "--projectname $Project"
         "--auth PAT"
-        "--token '$AccessToken'"
+        "--token $AccessToken"
     )
 
     if ([bool]::Parse($Replace)) {
