@@ -101,6 +101,22 @@
       "visibleRule": "Protocol = Https",
       "required": false,
       "helpMarkDown": "Select the option to skip validating the authenticity of the machine's certificate by a trusted certification authority. The parameter is required for the WinRM HTTPS protocol."
+    },
+    {
+      "name": "RunAsUserName",
+      "type": "string",
+      "label": "Run As Login",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Username to run the agent service as, if required. <br> Eg: Format: Domain\\Admin User, Admin User@Domain, .\\Admin User"
+    },
+    {
+      "name": "RunAsPassword",
+      "type": "string",
+      "label": "Run As Password",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Password for user account to run the agent service as, if required. <br>It can accept variable defined in build or release pipelines as '$(passwordVariable)'. <br>You may mark variable type as 'secret' to secure it."
     }
   ],
   "instanceNameFormat": "Add Machine(s) to Deployment Group",
