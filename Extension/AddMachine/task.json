@@ -50,6 +50,14 @@
       "helpMarkDown": "Project containing the deployment group. Defaults to the current project containing this task."
     },
     {
+      "name": "AgentPath",
+      "type": "string",
+      "label": "Agent Path",
+      "defaultValue": "C:\\azagent",
+      "required": false,
+      "helpMarkDown": "Path to provision the deployment group agent in. Defaults to C:\\azagent"
+    },
+    {
       "name": "ComputerName",
       "type": "multiLine",
       "label": "Machines",
