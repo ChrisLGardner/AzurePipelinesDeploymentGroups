@@ -156,4 +156,4 @@ $AgentName | Foreach-Object {
     }
 }
 
-Get-Job | Wait-Job | Receive-Job -AutoRemoveJob
+Get-Job | Wait-Job | Receive-Job -AutoRemoveJob -Wait
