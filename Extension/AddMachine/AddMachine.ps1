@@ -139,10 +139,21 @@ $DeploymentGroupId = $DeploymentGroups | Where-Object {$_.Name -eq $DeploymentGr
 
 $DeploymentGroupDetailsUrl = "$ENV:System_TeamFoundationCollectionUri/$Project/_apis/distributedtask/deploymentgroups/$($DeploymentGroupId.Id)?api-version=5.0-preview.1"
 
-$DeploymentGroupDetails = Invoke-RestMethod -Uri $DeploymentGroupDetailsUrl -Headers $Headers
+$AgentName | Foreach-Object {
+    Start-Job -ArgumentList $_, $Headers, $DeploymentGroupDetailsUrl -ScriptBlock {
+        param (
+            $AgentName,
+            $Headers,
+            $Url
+        )
+        $DeploymentGroupDetails = Invoke-RestMethod -Uri $Url -Headers $Headers
 
-while (-not($DeploymentGroupDetails.machines.agent | Where-Object { $_.name -eq $AgentName -and $_.Status -eq 'Online'}) ) {
-    Write-Host "Waiting to allow agent to connect and rechecking."
-    Start-Sleep -Seconds 20
-    $DeploymentGroupDetails = Invoke-RestMethod -Uri $DeploymentGroupDetailsUrl -Headers $Headers
+        while (-not($DeploymentGroupDetails.machines.agent | Where-Object { $_.name -eq $AgentName -and $_.Status -eq 'Online'}) ) {
+            Write-Host "Waiting to allow agent to connect and rechecking."
+            Start-Sleep -Seconds 20
+            $DeploymentGroupDetails = Invoke-RestMethod -Uri $Url -Headers $Headers
+        }
+    }
 }
+
+Get-Job | Wait-Job | Receive-Job -AutoRemoveJob
